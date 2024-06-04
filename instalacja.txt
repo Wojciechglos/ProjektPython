@@ -1,0 +1,10 @@
+@echo off
+set APP_NAME=NAZWA_APLIKACJI
+set INSTALLER_PATH=ŚCIEŻKA_DO_PLIKU.exe
+
+echo Instalowanie %APP_NAME%...
+
+start "" %INSTALLER_PATH%
+
+echo Instalacja %APP_NAME% zakończona.
+pause
