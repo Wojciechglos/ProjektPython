@@ -87,7 +87,7 @@ class Menu(ttk.Frame):
                                   command=lambda: controller.show_frame("MapaStacji"))
         start_button_2.grid(row=2, column=0, pady=10)
 
-        exit_button = ttk.Button(self, text="Wyjście z aplikacji",
+        exit_button = ttk.Button(self, text="Exit",
                                       command=self.exit_application)
         exit_button.grid(row=3, column=0, pady=10)
 
@@ -151,22 +151,32 @@ class StronaWyboruStacji(ttk.Frame):
         label = ttk.Label(self, text="Wybór Stacji Pomiarowej")
         label.grid(row=0, column=0, pady=10)
 
-        self.station_list = tk.Listbox(self, height=10, width=50)
-        self.station_list.grid(row=1, column=0, pady=10)
+        # Okienko do sortowania
+        self.sort_options = ttk.Combobox(self, values=["Nazwa", "ID"], state="readonly")
+        self.sort_options.current(0)  # Ustawienie domyślnej opcji sortowania
+        self.sort_options.grid(row=1, column=0, columnspan=2, pady=10)
 
-        ttk.Button(self, text="Pobierz wszystkie stacje", command=self.update_stations).grid(row=2, column=0, pady=10)
-        ttk.Button(self, text="Dalej", command=self.go_to_next_page).grid(row=3, column=0, pady=10)
-        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.show_frame("Menu")).grid(row=4, column=0, pady=10)
+        self.station_list = tk.Listbox(self, height=10, width=50)
+        self.station_list.grid(row=2, column=0, columnspan=2, pady=10)
+
+        ttk.Button(self, text="Pobierz wszystkie stacje", command=self.update_stations).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Dalej", command=self.go_to_next_page).grid(row=4, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.show_frame("Menu")).grid(row=5, column=0, columnspan=2, pady=10)
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
 
     # Metoda do aktualizacji listy stacji pomiarowych
     def update_stations(self):
         try:
             stations = api_stations()  # Pobranie stacji pomiarowych
+            sort_option = self.sort_options.get()  # Pobranie opcji sortowania
+            if sort_option == "Nazwa":
+                stations.sort(key=lambda x: x['stationName'])  # Sortowanie po nazwie
+            elif sort_option == "ID":
+                stations.sort(key=lambda x: x['id'])  # Sortowanie po ID
+
             self.station_list.delete(0, tk.END)  # Wyczyszczenie listy
             for station in stations:
                 station_info = " ".join([station['stationName'], '(', str(station['id']), ')'])
-                station_info2 = " ".join([station['stationName']])    #Próba nie pokazywania id w liście
                 self.station_list.insert(tk.END, station_info) # Dodanie informacji o stacji do listy
         except requests.RequestException as e:
             messagebox.showerror("Błąd", f"Nie udało się pobrać stacji: {e}")  # Wyświetlenie błędu
@@ -198,11 +208,16 @@ class WyborSensora(ttk.Frame):
         label = ttk.Label(self, text="Wybór Sensora")
         label.grid(row=0, column=0, pady=10)
 
-        self.sensor_list = tk.Listbox(self, height=10)
-        self.sensor_list.grid(row=1, column=0, pady=10)
+        # Okienko do sortowania
+        self.sort_options = ttk.Combobox(self, values=["Nazwa", "ID"], state="readonly")
+        self.sort_options.current(0)  # Ustawienie domyślnej opcji sortowania
+        self.sort_options.grid(row=1, column=0, columnspan=2, pady=10)
 
-        ttk.Button(self, text="Pobierz sensory", command=self.show_sensors).grid(row=2, column=0, pady=10)
-        ttk.Button(self, text="Dalej", command=self.go_to_next_page).grid(row=3, column=0, pady=10)
+        self.sensor_list = tk.Listbox(self, height=10, width=50)
+        self.sensor_list.grid(row=2, column=0, pady=5)
+
+        ttk.Button(self, text="Pobierz sensory", command=self.show_sensors).grid(row=3, column=0, pady=10)
+        ttk.Button(self, text="Dalej", command=self.go_to_next_page).grid(row=4, column=0, pady=10)
         ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.show_frame("Menu")).grid(row=5, column=0, pady=10)
 
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
@@ -212,11 +227,17 @@ class WyborSensora(ttk.Frame):
         self.station_id = station_id
 
     # Metoda do pobrania sensorów dla wybranej stacji
+
     def show_sensors(self):
         if not self.station_id:
             return
         try:
             sensors = api_sensors(self.station_id)  # Pobranie sensorów
+            sort_option = self.sort_options.get()  # Pobranie opcji sortowania
+            if sort_option == "Nazwa":
+                sensors.sort(key=lambda x: x['param']['paramName'])  # Sortowanie po nazwie
+            elif sort_option == "ID":
+                sensors.sort(key=lambda x: x['id'])  # Sortowanie po ID
             self.sensor_list.delete(0, tk.END)  # Wyczyszczenie listy sensorów
             for sensor in sensors:
                 self.sensor_list.insert(tk.END,
@@ -253,7 +274,7 @@ class DataAnalysisPage(ttk.Frame):
 
         ttk.Button(self, text="Pobierz i zapisz dane", command=self.fetch_and_save_sensor_data).grid(row=1, column=0,
                                                                                                      pady=10)
-        # ttk.Button(self, text="Pokaż dane na histogramie", command=self.show_historical_data).grid(row=2, column=0, pady=10)
+        ttk.Button(self, text="Pokaż dane na histogramie", command=self.show_historical_data).grid(row=2, column=0, pady=10)
         ttk.Button(self, text="Analizuj dane ", command=self.analyze_historical_data).grid(row=3, column=0, pady=10)
         ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.show_frame("Menu")).grid(row=6, column=0, pady=10)
 
@@ -280,34 +301,6 @@ class DataAnalysisPage(ttk.Frame):
                 messagebox.showerror("Błąd", "Brak danych pomiarowych dla wybranego sensora.")  # Wyświetlenie błędu
         except requests.RequestException as e:
             messagebox.showerror("Błąd", f"Nie udało się pobrać danych sensora: {e}")  # Wyświetlenie błędu
-
-    # Metoda do pobrania danych wszystkich sensorów
-    def fetch_all_sensors_data(self):
-        if not self.sensor_id:
-            return None
-        try:
-            sensors = api_sensors(self.sensor_id)  # Pobranie sensorów
-            all_data = []
-            for sensor in sensors:
-                sensor_data = api_sensor_data(sensor['id'])  # Pobranie danych sensora
-                if 'values' in sensor_data:
-                    for value in sensor_data['values']:
-                        all_data.append(
-                            (sensor['param']['paramName'], value['value'], value['date']))  # Dodanie danych do listy
-            return all_data
-        except requests.RequestException as e:
-            messagebox.showerror("Błąd", f"Nie udało się pobrać danych sensorów: {e}")  # Wyświetlenie błędu
-            return None
-
-    # Metoda do tworzenia wykresu danych ze wszystkich sensorów
-    def plot_all_sensors_data(self):
-        data = self.fetch_all_sensors_data()  # Pobranie danych wszystkich sensorów
-        if data:
-            df = pd.DataFrame(data, columns=['Param', 'Value', 'Date'])  # Utworzenie ramki danych
-            df['Date'] = pd.to_datetime(df['Date'])  # Konwersja kolumny z datą do typu datetime
-            plot_data(df)  # Tworzenie wykresu
-        else:
-            messagebox.showerror("Błąd", "Brak danych do wyświetlenia.")  # Wyświetlenie błędu
 
     # # Metoda do wyświetlenia danych historycznych
     def show_historical_data(self):
@@ -339,6 +332,3 @@ if __name__ == "__main__":
     app = Aplikacja_do_sprawdzania_jakosci_powietrza()  # Utworzenie głównej aplikacji
     app.center_window()  # Wyśrodkowanie okna na ekranie
     app.mainloop()  # Uruchomienie pętli głównej aplikacji
-    root = tk.Tk()
-    MapaStacji(root).grid(sticky="nsew")
-    root.mainloop()
