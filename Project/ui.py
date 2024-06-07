@@ -11,8 +11,7 @@ import webbrowser
 import tempfile
 
 from analysis import analyze_data, calculate_trends  # Importowanie funkcji do analizy danych
-from database import create_database, save_data, \
-    fetch_historical_data  # Importowanie funkcji związanych z obsługą bazy danych
+from database import create_database, save_data, fetch_historical_data  # Importowanie funkcji związanych z obsługą bazy danych
 # Importowanie funkcji z innych plików
 from API import api_stations, api_sensors, api_sensor_data  # Importowanie funkcji do pobierania danych
 from plot_data import plot_data  # Importowanie funkcji do tworzenia wykresów
@@ -75,27 +74,42 @@ class Menu(ttk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        # Tworzenie etykiety i przycisku startu
+        # Tworzenie etykiety i przycisków startu
         label = ttk.Label(self, text="Witamy w aplikacji do sprawdzania jakości powietrza")
         label.grid(row=0, column=0, pady=10)
 
-        start_button1 = ttk.Button(self, text="Rozpocznij",
+        start_button1 = ttk.Button(self, text="Rozpocznij z danymi online",
                                   command=lambda: controller.show_frame("StronaWyboruStacji"))
         start_button1.grid(row=1, column=0, pady=10)
 
-        start_button_2 = ttk.Button(self, text="Wygeneruj mape stacji",
+        start_button2 = ttk.Button(self, text="Rozpocznij z danymi offline ",
+                                   command=lambda: controller.show_frame("StronaWyboruStacji"))
+        start_button2.grid(row=2, column=0, pady=10)
+
+        start_button3 = ttk.Button(self, text="Wygeneruj mape stacji",
                                   command=lambda: controller.show_frame("MapaStacji"))
-        start_button_2.grid(row=2, column=0, pady=10)
+        start_button3.grid(row=3, column=0, pady=10)
 
         exit_button = ttk.Button(self, text="Exit",
                                       command=self.exit_application)
-        exit_button.grid(row=3, column=0, pady=10)
+        exit_button.grid(row=4, column=0, pady=10)
 
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
 
     # Metoda do obsługi zdarzenia kliknięcia przycisku Exit
     def exit_application(self):
         self.controller.quit()  # Zamknięcie aplikacji
+
+    # Metoda do analizy danych historycznych
+    def analyze_historical_data(self):
+        data = fetch_historical_data(self.sensor_id)  # Pobranie danych historycznych
+        if data:
+            summary, correlation = analyze_data(data)  # Analiza danych
+            trends = calculate_trends(data)  # Obliczanie trendów
+            messagebox.showinfo("Analiza danych",
+                                f"Podsumowanie:\n{summary}\n\nKorelacja:\n{correlation}\n\nTrendy:\n{trends}")  # Wyświetlenie wyników analizy
+        else:
+            messagebox.showerror("Błąd", "Brak danych historycznych dla podanej miejscowości.")  # Wyświetlenie błędu
 
     # Metoda do wyśrodkowania widżetów na stronie
     def centrowanie(self):
