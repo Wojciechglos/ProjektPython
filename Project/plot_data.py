@@ -38,7 +38,7 @@ def plot_data(data):
             poly_coeffs = np.polyfit(range(len(param_values)), param_values, 1)
             print("poly_coeffs:", poly_coeffs)  # Dodatkowy wiersz do debugowania
             trend_line = np.polyval(poly_coeffs, range(len(param_values)))
-            plt.plot(param_timestamps, trend_line, linestyle='--', color='gray')
+            plt.plot(param_timestamps, trend_line, linestyle='--', color='orange')
 
     # Dodanie etykiet osi x i y
     plt.xlabel('Czas')
