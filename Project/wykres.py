@@ -3,49 +3,54 @@ from datetime import datetime
 import numpy as np
 
 
-def wykres_data(data):
-    # Konwersja dat z formatu tekstowego na obiekty datetime i umieszczenie ich w liście timestamps
-    timestamps = [datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S') for row in data]
+def wykres_danych(data):
+    # Konwersja dat z formatu tekstowego na obiekty datetime i umieszczenie ich w liście znaczników_czasu
+    znaczniki_czasu = [datetime.strptime(wiersz[4], '%Y-%m-%d %H:%M:%S') for wiersz in data]
 
-    # Umieszczenie wartości pomiarów w liście values
-    values = [row[3] for row in data]
+    # Umieszczenie wartości pomiarów w liście wartosci
+    wartosci = [wiersz[3] for wiersz in data]
 
     # Utworzenie listy unikalnych nazw parametrów z trzeciej kolumny danych
-    param_names = list(set(row[2] for row in data))
+    nazwy_parametrow = list(set(wiersz[2] for wiersz in data))
 
     # Utworzenie nowego wykresu
     plt.figure(figsize=(10, 5))
 
     # Iteracja po każdym unikalnym parametrze
-    for param_name in param_names:
+    for nazwa_parametru in nazwy_parametrow:
         # Wybór wartości dla danego parametru
-        param_values = [row[3] for row in data if row[2] == param_name]
-        param_values = [value for value in param_values if value is not None]  # Filtruj wartości None
-        print("param_values:", param_values)  # Dodatkowy wiersz do debugowania
+        wartosci_parametru = [wiersz[3] for wiersz in data if wiersz[2] == nazwa_parametru]
+        wartosci_parametru = [wartosc for wartosc in wartosci_parametru if wartosc is not None]  # Filtruj wartości None
+
         # Wybór dat dla danego parametru
-        param_timestamps = [datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S') for row in data if row[2] == param_name]
+        znaczniki_czasu_parametru = [datetime.strptime(wiersz[4], '%Y-%m-%d %H:%M:%S') for wiersz in data if wiersz[2] == nazwa_parametru]
 
         # Upewnij się, że mamy tyle samo danych dla każdego parametru
-        min_length = min(len(param_values), len(param_timestamps))
-        param_values = param_values[:min_length]
-        param_timestamps = param_timestamps[:min_length]
+        dlugosc_minimalna = min(len(wartosci_parametru), len(znaczniki_czasu_parametru))
+        wartosci_parametru = wartosci_parametru[:dlugosc_minimalna]
+        znaczniki_czasu_parametru = znaczniki_czasu_parametru[:dlugosc_minimalna]
 
         # Dodanie serii danych do wykresu dla danego parametru
-        plt.plot(param_timestamps, param_values, label=param_name)
+        linia, = plt.plot(znaczniki_czasu_parametru, wartosci_parametru, label=nazwa_parametru)
 
         # Dodanie linii trendu
-        if param_values:  # Sprawdź, czy param_values nie jest puste
-            poly_coeffs = np.polyfit(range(len(param_values)), param_values, 1)
-            print("poly_coeffs:", poly_coeffs)  # Dodatkowy wiersz do debugowania
-            trend_line = np.polyval(poly_coeffs, range(len(param_values)))
-            plt.plot(param_timestamps, trend_line, linestyle='--', color='orange')
+        if wartosci_parametru:  # Sprawdź, czy wartosci_parametru nie jest puste
+            wspolczynniki_wielomianu = np.polyfit(range(len(wartosci_parametru)), wartosci_parametru, 1)
+            linia_trendu = np.polyval(wspolczynniki_wielomianu, range(len(wartosci_parametru)))
+            plt.plot(znaczniki_czasu_parametru, linia_trendu, linestyle='--', color='orange')
+
+        # Analiza danych
+        wartosc_minimalna = np.min(wartosci_parametru)
+        wartosc_maksymalna = np.max(wartosci_parametru)
+        wartosc_srednia = np.mean(wartosci_parametru)
+        trend = "wzrost" if wspolczynniki_wielomianu[0] < 0 else "spadek"
+
+        # Dodanie danych w legendzie
+        plt.legend(handles=[linia], labels=[f'{nazwa_parametru} (min: {wartosc_minimalna:.1f}, śr: {wartosc_srednia:.1f}, max: {wartosc_maksymalna:.1f})'], loc='upper left')
 
     # Dodanie etykiet osi x i y
     plt.xlabel('Czas')
     plt.ylabel('Wartość')
-
-    # Dodanie legendy z nazwami parametrów
-    plt.legend()
 
     # Wyświetlenie wykresu
     plt.show()
