@@ -1,16 +1,10 @@
 # Importowanie modułów
 import tkinter as tk
 from tkinter import ttk, messagebox
-from tkhtmlview import HTMLLabel
-from tkinterweb import HtmlFrame
-
-import pandas as pd  # Moduł do pracy z danymi tabelarycznymi
 import requests as requests  # Moduł do wykonywania zapytań HTTP
 import map_generator
 import webbrowser
 import tempfile
-
-from analysis import analyze_data, calculate_trends  # Importowanie funkcji do analizy danych
 from database import create_database, save_data, Dane  # Importowanie funkcji związanych z obsługą bazy danych
 # Importowanie funkcji z innych plików
 from API import api_stations, api_sensors, api_sensor_data, api_index_powietrza  # Importowanie funkcji do pobierania danych
