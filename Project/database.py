@@ -15,7 +15,7 @@ def save_data(city, param_name, value, timestamp):
     conn.commit()
     conn.close()
 
-def fetch_historical_data(city):
+def Dane(city):
     conn = sqlite3.connect('baza_gios.db')
     c = conn.cursor()
     c.execute("SELECT * FROM air_quality WHERE city = ? ORDER BY timestamp DESC", (city,))
