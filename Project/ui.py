@@ -1,4 +1,4 @@
-# Importowanie modułów
+# Importowanie modułów do interfejsu
 import tkinter as tk
 from tkinter import ttk, messagebox
 import requests as requests  # Moduł do wykonywania zapytań HTTP
