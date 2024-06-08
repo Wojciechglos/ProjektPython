@@ -15,9 +15,7 @@ from database import create_database, save_data, fetch_historical_data  # Import
 # Importowanie funkcji z innych plików
 from API import api_stations, api_sensors, api_sensor_data  # Importowanie funkcji do pobierania danych
 from plot_data import plot_data  # Importowanie funkcji do tworzenia wykresów
-##############################################################################################################
-##############################################################################################################
-##############################################################################################################
+
 
 # Klasa głównego okna aplikacji
 class Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk):
