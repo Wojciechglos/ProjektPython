@@ -32,7 +32,7 @@ class Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk):
 
         # Tworzenie instancji każdej strony aplikacji i dodanie ich do słownika ram
 
-        for F in (Menu, MapaStacji, StronaWyboruStacji, WyborSensora, DataAnalysisPage):
+        for F in (Menu, MapaStacji, StronaWyboruStacji, WyborSensora, AnalizaDanych):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -262,9 +262,9 @@ class WyborSensora(ttk.Frame):
         selected_sensor = self.sensor_list.get(tk.ACTIVE)  # Pobranie zaznaczonego sensora
         if selected_sensor:
             sensor_id = selected_sensor.split('(')[-1].strip(')')  # Pobranie ID sensora
-            self.controller.frames["DataAnalysisPage"].set_sensor_id(
+            self.controller.frames["AnalizaDanych"].set_sensor_id(
                 sensor_id)  # Ustawienie ID sensora na następnej stronie
-            self.controller.show_frame("DataAnalysisPage")  # Przejście do kolejnej strony
+            self.controller.show_frame("AnalizaDanych")  # Przejście do kolejnej strony
         else:
             messagebox.showwarning("Uwaga", "Proszę wybrać sensor")  # Wyświetlenie ostrzeżenia
 
@@ -274,7 +274,7 @@ class WyborSensora(ttk.Frame):
             child.grid_configure(padx=200)
 
 # Klasa reprezentująca stronę analizy danych
-class DataAnalysisPage(ttk.Frame):
+class AnalizaDanych(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
