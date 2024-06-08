@@ -46,14 +46,18 @@ def wykres_danych(data):
             linia_trendu = np.polyval(wspolczynniki_wielomianu, range(len(wartosci_parametru)))
             plt.plot(znaczniki_czasu_parametru, linia_trendu, linestyle='--', color='orange')
 
-            # Analiza danych
-            wartosc_srednia = np.mean(wartosci_parametru)
-            trend = "wzrost" if wspolczynniki_wielomianu[0] < 0 else "spadek"
+        # Analiza danych
+        wartosc_srednia = np.mean(wartosci_parametru)
+        trend = "wzrost" if wspolczynniki_wielomianu[0] < 0 else "spadek"
 
-            # Dodanie danych w legendzie z odpowiednimi kolorami i informacjami o min, max, avg
-            plt.legend(handles=[linia], labels=[f'{nazwa_parametru}\n(min: {wartosc_minimalna:.1f}, max: {wartosc_maksymalna:.1f}, AVG: {wartosc_srednia:.1f}, trend: {trend})'], loc='upper left')
+        # Dodanie danych w legendzie z odpowiednimi kolorami
+        plt.legend(handles=[linia], labels=[f'{nazwa_parametru} (min: {wartosc_minimalna:.1f}, śr: {wartosc_srednia:.1f}, max: {wartosc_maksymalna:.1f})'], loc='upper left')
 
-    # Dodanie informacji o osiach x i y
+        # Dodanie tekstu z datą i godziną wartości minimalnej i maksymalnej
+        plt.text(znaczniki_czasu_parametru[wartosci_parametru.index(wartosc_minimalna)], wartosc_minimalna, f'Min: {znaczniki_czasu_parametru[wartosci_parametru.index(wartosc_minimalna)].strftime("%Y-%m-%d %H:%M:%S")}', fontsize=8, ha='right')
+        plt.text(znaczniki_czasu_parametru[wartosci_parametru.index(wartosc_maksymalna)], wartosc_maksymalna, f'Max: {znaczniki_czasu_parametru[wartosci_parametru.index(wartosc_maksymalna)].strftime("%Y-%m-%d %H:%M:%S")}', fontsize=8, ha='right')
+
+    # Dodanie etykiet osi x i y
     plt.xlabel('Czas')
     plt.ylabel('Wartość')
 
