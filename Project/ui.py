@@ -11,10 +11,10 @@ import webbrowser
 import tempfile
 
 from analysis import analyze_data, calculate_trends  # Importowanie funkcji do analizy danych
-from database import create_database, save_data, fetch_historical_data  # Importowanie funkcji związanych z obsługą bazy danych
+from database import create_database, save_data, Dane  # Importowanie funkcji związanych z obsługą bazy danych
 # Importowanie funkcji z innych plików
 from API import api_stations, api_sensors, api_sensor_data  # Importowanie funkcji do pobierania danych
-from wykres import wykres_data  # Importowanie funkcji do tworzenia wykresów
+from wykres import wykres_danych  # Importowanie funkcji do tworzenia wykresów
 
 
 # Klasa głównego okna aplikacji
@@ -100,7 +100,7 @@ class Menu(ttk.Frame):
 
     # Metoda do analizy danych historycznych
     def analyze_historical_data(self):
-        data = fetch_historical_data(self.sensor_id)  # Pobranie danych historycznych
+        data = Dane(self.sensor_id)  # Pobranie danych historycznych
         if data:
             summary, correlation = analyze_data(data)  # Analiza danych
             trends = calculate_trends(data)  # Obliczanie trendów
@@ -286,7 +286,7 @@ class AnalizaDanych(ttk.Frame):
 
         ttk.Button(self, text="Pobierz i zapisz dane", command=self.fetch_and_save_sensor_data).grid(row=1, column=0,
                                                                                                      pady=10)
-        ttk.Button(self, text="Pokaż dane na histogramie", command=self.show_historical_data).grid(row=2, column=0, pady=10)
+        ttk.Button(self, text="Pokaż dane na histogramie", command=self.rysowanie_wykresu).grid(row=2, column=0, pady=10)
         ttk.Button(self, text="Analizuj dane ", command=self.analyze_historical_data).grid(row=3, column=0, pady=10)
         ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.show_frame("Menu")).grid(row=6, column=0, pady=10)
 
@@ -315,16 +315,16 @@ class AnalizaDanych(ttk.Frame):
             messagebox.showerror("Błąd", f"Nie udało się pobrać danych sensora: {e}")  # Wyświetlenie błędu
 
     # # Metoda do wyświetlenia danych historycznych
-    def show_historical_data(self):
-        data = fetch_historical_data(self.sensor_id)  # Pobranie danych historycznych
+    def rysowanie_wykresu(self):
+        data = Dane(self.sensor_id)  # Pobranie danych historycznych
         if data:
-            wykres_data(data)  # Wyświetlenie danych na wykresie
+            wykres_danych(data)  # Wyświetlenie danych na wykresie
         else:
             messagebox.showerror("Błąd", "Brak danych historycznych dla podanej miejscowości.")  # Wyświetlenie błędu
 
     # Metoda do analizy danych historycznych
     def analyze_historical_data(self):
-        data = fetch_historical_data(self.sensor_id)  # Pobranie danych historycznych
+        data = Dane(self.sensor_id)  # Pobranie danych historycznych
         if data:
             summary, correlation = analyze_data(data)  # Analiza danych
             trends = calculate_trends(data)  # Obliczanie trendów
