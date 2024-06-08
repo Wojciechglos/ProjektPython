@@ -104,10 +104,10 @@ class MapaStacji(ttk.Frame):
         super().__init__(parent)
         self.parent = parent
         self.controller = controller
-        self.create_widgets()
+        self.generowanie_pol_mapy()
 
 # Generowanie okna Wygeneruj mape stacji
-    def create_widgets(self):
+    def generowanie_pol_mapy(self):
         ttk.Label(self, text="Adres:").grid(row=0, column=0, padx=10, pady=10)
         self.entry_address = ttk.Entry(self)
         self.entry_address.grid(row=0, column=1, padx=10, pady=10)
@@ -119,7 +119,7 @@ class MapaStacji(ttk.Frame):
         ttk.Button(self, text="Generuj mapę", command=self.generate_map).grid(row=2, column=0, columnspan=2, pady=10)
         ttk.Button(self, text="Wyjście do MENU", command=lambda: self.controller.wyświetlenie_ramki("Menu")).grid(row=3, column=0, columnspan=2, pady=10)
 
-    def generate_map(self):
+    def generowanie_mapy(self):
         address = self.entry_address.get()
         radius_km = self.entry_radius.get()
         html_content = map_generator.generate_map_and_return_html(address, radius_km)
