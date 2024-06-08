@@ -1,0 +1,11 @@
+C:\Users\Wojtek\Desktop\ProjektPython\Scripts\python.exe C:\Users\Wojtek\PycharmProjects\ProjektPython\Project\ui.py
+Nie udało się wykonać zapytania: HTTPSConnectionPool(host='api.gios.gov.pl', port=443): Max retries exceeded with url: /pjp-api/rest/station/findAll (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x000002328D837B30>: Failed to resolve 'api.gios.gov.pl' ([Errno 11001] getaddrinfo failed)"))
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "C:\Users\Wojtek\AppData\Local\Programs\Python\Python312\Lib\tkinter\__init__.py", line 1948, in __call__
+    return self.func(*args)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\Wojtek\PycharmProjects\ProjektPython\Project\ui.py", line 167, in aktualizuj_stacje
+    stations.sort(key=lambda x: x['stationName'])  # Sortowanie po nazwie
+    ^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'sort'

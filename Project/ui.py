@@ -135,7 +135,16 @@ class MapaStacji(ttk.Frame):
         for child in self.winfo_children():
             child.grid_configure(padx=200)
 
-# Klasa reprezentująca stronę wyboru stacji pomiarowej
+def api_stations():
+    # Funkcja pobierająca stacje pomiarowe z API
+    try:
+        response = requests.get("https://api.gios.gov.pl/pjp-api/rest/station/findAll")
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        messagebox.showerror("Błąd", f"Nie udało się pobrać stacji: {e}")
+        return None
+
 class StronaWyboruStacji(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -145,35 +154,49 @@ class StronaWyboruStacji(ttk.Frame):
         label = ttk.Label(self, text="Wybór Stacji Pomiarowej")
         label.grid(row=0, column=0, pady=10)
 
+        # Pole do wpisania nazwy miejscowości
+        self.city_name_var = tk.StringVar()
+        self.city_name_entry = ttk.Entry(self, textvariable=self.city_name_var)
+        self.city_name_entry.grid(row=1, column=0, columnspan=2, pady=10)
+
         # Okienko do sortowania
         self.sort_options = ttk.Combobox(self, values=["Nazwa", "ID"], state="readonly")
         self.sort_options.current(0)  # Ustawienie domyślnej opcji sortowania
-        self.sort_options.grid(row=1, column=0, columnspan=2, pady=10)
+        self.sort_options.grid(row=2, column=0, columnspan=2, pady=10)
 
         self.station_list = tk.Listbox(self, height=10, width=50)
-        self.station_list.grid(row=2, column=0, columnspan=2, pady=10)
+        self.station_list.grid(row=3, column=0, columnspan=2, pady=10)
 
-        ttk.Button(self, text="Pobierz wszystkie stacje", command=self.aktualizuj_stacje).grid(row=3, column=0, columnspan=2, pady=10)
-        ttk.Button(self, text="Dalej", command=self.idz_do_nastepnej_strony).grid(row=4, column=0, columnspan=2, pady=10)
-        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.wyświetlenie_ramki("Menu")).grid(row=5, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Odśwież okno stacji", command=self.aktualizuj_stacje).grid(row=4, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Wybierz stacje i przejdź dalej", command=self.idz_do_nastepnej_strony).grid(row=5, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.wyświetlenie_ramki("Menu")).grid(row=6, column=0, columnspan=2, pady=10)
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
 
     # Metoda do aktualizacji listy stacji pomiarowych
     def aktualizuj_stacje(self):
         try:
             stations = api_stations()  # Pobranie stacji pomiarowych
+            if stations is None:
+                return  # Przerwij, jeśli nie udało się pobrać danych
+
             sort_option = self.sort_options.get()  # Pobranie opcji sortowania
             if sort_option == "Nazwa":
                 stations.sort(key=lambda x: x['stationName'])  # Sortowanie po nazwie
             elif sort_option == "ID":
                 stations.sort(key=lambda x: x['id'])  # Sortowanie po ID
 
+            city_name = self.city_name_var.get().strip().lower()
+            if city_name:
+                stations = [station for station in stations if city_name in station['stationName'].lower()]
+
             self.station_list.delete(0, tk.END)  # Wyczyszczenie listy
             for station in stations:
-                station_info = " ".join([station['stationName'], '(', str(station['id']), ')'])
-                self.station_list.insert(tk.END, station_info) # Dodanie informacji o stacji do listy
+                station_info = f"{station['stationName']} ({station['id']})"
+                self.station_list.insert(tk.END, station_info)  # Dodanie informacji o stacji do listy
         except requests.RequestException as e:
             messagebox.showerror("Błąd", f"Nie udało się pobrać stacji: {e}")  # Wyświetlenie błędu
+        except AttributeError:
+            messagebox.showerror("Błąd", "Dane stacji są niepoprawne.")
 
     # Metoda do przejścia do kolejnej strony
     def idz_do_nastepnej_strony(self):
@@ -210,8 +233,8 @@ class WyborSensora(ttk.Frame):
         self.sensor_list = tk.Listbox(self, height=10, width=50)
         self.sensor_list.grid(row=2, column=0, pady=5)
 
-        ttk.Button(self, text="Pobierz sensory", command=self.aktualizuj_sensory).grid(row=3, column=0, pady=10)
-        ttk.Button(self, text="Dalej", command=self.idz_do_nastepnej_strony).grid(row=4, column=0, pady=10)
+        ttk.Button(self, text="Odśwież okno sensorów", command=self.aktualizuj_sensory).grid(row=3, column=0, pady=10)
+        ttk.Button(self, text="Wybierz sensor i przejdź dalej", command=self.idz_do_nastepnej_strony).grid(row=4, column=0, pady=10)
         ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.wyświetlenie_ramki("Menu")).grid(row=5, column=0, pady=10)
 
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
