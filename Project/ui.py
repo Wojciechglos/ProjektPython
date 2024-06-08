@@ -49,8 +49,8 @@ class Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk):
         screen_height = self.winfo_screenheight()
 
         # Pobranie wymiarów okna
-        window_width = self.winfo_reqwidth()
-        window_height = self.winfo_reqheight()
+        window_width = self.winfo_width()
+        window_height = self.winfo_height()
 
         # Obliczenie współrzędnych środka ekranu
         x = (screen_width - window_width) // 2
