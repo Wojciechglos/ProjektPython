@@ -13,7 +13,7 @@ import tempfile
 from analysis import analyze_data, calculate_trends  # Importowanie funkcji do analizy danych
 from database import create_database, save_data, Dane  # Importowanie funkcji związanych z obsługą bazy danych
 # Importowanie funkcji z innych plików
-from API import api_stations, api_sensors, api_sensor_data  # Importowanie funkcji do pobierania danych
+from API import api_stations, api_sensors, api_sensor_data, api_index_powietrza  # Importowanie funkcji do pobierania danych
 from wykres import wykres_danych  # Importowanie funkcji do tworzenia wykresów
 
 
@@ -38,7 +38,7 @@ class Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk):
             self.frames[page_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame("Menu")  # Wyświetlenie strony startowej
+        self.wyświetlenie_ramki("Menu")  # Wyświetlenie strony startowej
 
     # Metoda do wyśrodkowania okna na ekranie
     def center_window(self):
@@ -62,7 +62,7 @@ class Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk):
             child.grid_configure(padx=200)
 
     # Metoda do wyświetlania danej strony aplikacji
-    def show_frame(self, page_name):
+    def wyświetlenie_ramki(self, page_name):
         frame = self.frames[page_name]
         frame.tkraise()  # Wyświetlenie ramki
 
@@ -77,42 +77,26 @@ class Menu(ttk.Frame):
         label.grid(row=0, column=0, pady=10)
 
         start_button1 = ttk.Button(self, text="Rozpocznij z danymi online",
-                                  command=lambda: controller.show_frame("StronaWyboruStacji"))
+                                  command=lambda: controller.wyświetlenie_ramki("StronaWyboruStacji"))
         start_button1.grid(row=1, column=0, pady=10)
 
         start_button2 = ttk.Button(self, text="Rozpocznij z danymi offline ",
-                                   command=lambda: controller.show_frame("StronaWyboruStacji"))
+                                   command=lambda: controller.wyświetlenie_ramki("StronaWyboruStacji"))
         start_button2.grid(row=2, column=0, pady=10)
 
         start_button3 = ttk.Button(self, text="Wygeneruj mape stacji",
-                                  command=lambda: controller.show_frame("MapaStacji"))
+                                  command=lambda: controller.wyświetlenie_ramki("MapaStacji"))
         start_button3.grid(row=3, column=0, pady=10)
 
         exit_button = ttk.Button(self, text="Exit",
-                                      command=self.exit_application)
+                                      command=self.wyjscie_z_aplikacji)
         exit_button.grid(row=4, column=0, pady=10)
 
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
 
     # Metoda do obsługi zdarzenia kliknięcia przycisku Exit
-    def exit_application(self):
+    def wyjscie_z_aplikacji(self):
         self.controller.quit()  # Zamknięcie aplikacji
-
-    # Metoda do analizy danych historycznych
-    def analyze_historical_data(self):
-        data = Dane(self.sensor_id)  # Pobranie danych historycznych
-        if data:
-            summary, correlation = analyze_data(data)  # Analiza danych
-            trends = calculate_trends(data)  # Obliczanie trendów
-            messagebox.showinfo("Analiza danych",
-                                f"Podsumowanie:\n{summary}\n\nKorelacja:\n{correlation}\n\nTrendy:\n{trends}")  # Wyświetlenie wyników analizy
-        else:
-            messagebox.showerror("Błąd", "Brak danych historycznych dla podanej miejscowości.")  # Wyświetlenie błędu
-
-    # Metoda do wyśrodkowania widżetów na stronie
-    def centrowanie(self):
-        for child in self.winfo_children():
-            child.grid_configure(padx=200)
 
 # Klasa reprezentująca stronę Mapy stacji
 class MapaStacji(ttk.Frame):
@@ -133,7 +117,7 @@ class MapaStacji(ttk.Frame):
         self.entry_radius.grid(row=1, column=1, padx=10, pady=10)
 
         ttk.Button(self, text="Generuj mapę", command=self.generate_map).grid(row=2, column=0, columnspan=2, pady=10)
-        ttk.Button(self, text="Wyjście do MENU", command=lambda: self.controller.show_frame("Menu")).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Wyjście do MENU", command=lambda: self.controller.wyświetlenie_ramki("Menu")).grid(row=3, column=0, columnspan=2, pady=10)
 
     def generate_map(self):
         address = self.entry_address.get()
@@ -171,13 +155,13 @@ class StronaWyboruStacji(ttk.Frame):
         self.station_list = tk.Listbox(self, height=10, width=50)
         self.station_list.grid(row=2, column=0, columnspan=2, pady=10)
 
-        ttk.Button(self, text="Pobierz wszystkie stacje", command=self.update_stations).grid(row=3, column=0, columnspan=2, pady=10)
-        ttk.Button(self, text="Dalej", command=self.go_to_next_page).grid(row=4, column=0, columnspan=2, pady=10)
-        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.show_frame("Menu")).grid(row=5, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Pobierz wszystkie stacje", command=self.aktualizuj_stacje).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Dalej", command=self.idz_do_nastepnej_strony).grid(row=4, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.wyświetlenie_ramki("Menu")).grid(row=5, column=0, columnspan=2, pady=10)
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
 
     # Metoda do aktualizacji listy stacji pomiarowych
-    def update_stations(self):
+    def aktualizuj_stacje(self):
         try:
             stations = api_stations()  # Pobranie stacji pomiarowych
             sort_option = self.sort_options.get()  # Pobranie opcji sortowania
@@ -194,13 +178,13 @@ class StronaWyboruStacji(ttk.Frame):
             messagebox.showerror("Błąd", f"Nie udało się pobrać stacji: {e}")  # Wyświetlenie błędu
 
     # Metoda do przejścia do kolejnej strony
-    def go_to_next_page(self):
+    def idz_do_nastepnej_strony(self):
         selected_station = self.station_list.get(tk.ACTIVE)  # Pobranie zaznaczonej stacji
         if selected_station:
             station_id = selected_station.split('(')[-1].strip(')')  # Pobranie ID stacji
-            self.controller.frames["WyborSensora"].set_station_id(
+            self.controller.frames["WyborSensora"].ustaw_id_stacji(
                 station_id)  # Ustawienie ID stacji na następnej stronie
-            self.controller.show_frame("WyborSensora")  # Przejście do kolejnej strony
+            self.controller.wyświetlenie_ramki("WyborSensora")  # Przejście do kolejnej strony
         else:
             messagebox.showwarning("Uwaga", "Proszę wybrać stację pomiarową")  # Wyświetlenie ostrzeżenia
 
@@ -228,19 +212,19 @@ class WyborSensora(ttk.Frame):
         self.sensor_list = tk.Listbox(self, height=10, width=50)
         self.sensor_list.grid(row=2, column=0, pady=5)
 
-        ttk.Button(self, text="Pobierz sensory", command=self.show_sensors).grid(row=3, column=0, pady=10)
-        ttk.Button(self, text="Dalej", command=self.go_to_next_page).grid(row=4, column=0, pady=10)
-        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.show_frame("Menu")).grid(row=5, column=0, pady=10)
+        ttk.Button(self, text="Pobierz sensory", command=self.aktualizuj_sensory).grid(row=3, column=0, pady=10)
+        ttk.Button(self, text="Dalej", command=self.idz_do_nastepnej_strony).grid(row=4, column=0, pady=10)
+        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.wyświetlenie_ramki("Menu")).grid(row=5, column=0, pady=10)
 
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
 
     # Metoda do ustawienia ID stacji
-    def set_station_id(self, station_id):
+    def ustaw_id_stacji(self, station_id):
         self.station_id = station_id
 
     # Metoda do pobrania sensorów dla wybranej stacji
 
-    def show_sensors(self):
+    def aktualizuj_sensory(self):
         if not self.station_id:
             return
         try:
@@ -258,13 +242,13 @@ class WyborSensora(ttk.Frame):
             messagebox.showerror("Błąd", f"Nie udało się pobrać sensorów: {e}")  # Wyświetlenie błędu
 
     # Metoda do przejścia do kolejnej strony
-    def go_to_next_page(self):
+    def idz_do_nastepnej_strony(self):
         selected_sensor = self.sensor_list.get(tk.ACTIVE)  # Pobranie zaznaczonego sensora
         if selected_sensor:
             sensor_id = selected_sensor.split('(')[-1].strip(')')  # Pobranie ID sensora
-            self.controller.frames["AnalizaDanych"].set_sensor_id(
+            self.controller.frames["AnalizaDanych"].ustaw_id_sensora(
                 sensor_id)  # Ustawienie ID sensora na następnej stronie
-            self.controller.show_frame("AnalizaDanych")  # Przejście do kolejnej strony
+            self.controller.wyświetlenie_ramki("AnalizaDanych")  # Przejście do kolejnej strony
         else:
             messagebox.showwarning("Uwaga", "Proszę wybrać sensor")  # Wyświetlenie ostrzeżenia
 
@@ -283,22 +267,19 @@ class AnalizaDanych(ttk.Frame):
         # Tworzenie etykiety i przycisków do analizy danych
         label = ttk.Label(self, text="Analiza Danych")
         label.grid(row=0, column=0, pady=10)
-
-        ttk.Button(self, text="Pobierz i zapisz dane", command=self.fetch_and_save_sensor_data).grid(row=1, column=0,
-                                                                                                     pady=10)
+        ttk.Button(self, text="Pobierz i zapisz dane", command=self.pobranie_danych_sensora).grid(row=1, column=0, pady=10)
         ttk.Button(self, text="Pokaż dane na histogramie", command=self.rysowanie_wykresu).grid(row=2, column=0, pady=10)
-        ttk.Button(self, text="Analizuj dane ", command=self.analyze_historical_data).grid(row=3, column=0, pady=10)
-        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.show_frame("Menu")).grid(row=6, column=0, pady=10)
+        ttk.Button(self, text="Wyjście do MENU", command=lambda: controller.wyświetlenie_ramki("Menu")).grid(row=6, column=0, pady=10)
 
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
 
     # Metoda do ustawienia ID sensora
-    def set_sensor_id(self, sensor_id):
+    def ustaw_id_sensora(self, sensor_id):
         self.sensor_id = sensor_id
 
     # Metoda do pobrania i zapisania danych sensora
 
-    def fetch_and_save_sensor_data(self):
+    def pobranie_danych_sensora(self):
         if not self.sensor_id:
             return
         try:
@@ -322,21 +303,6 @@ class AnalizaDanych(ttk.Frame):
         else:
             messagebox.showerror("Błąd", "Brak danych historycznych dla podanej miejscowości.")  # Wyświetlenie błędu
 
-    # Metoda do analizy danych historycznych
-    def analyze_historical_data(self):
-        data = Dane(self.sensor_id)  # Pobranie danych historycznych
-        if data:
-            summary, correlation = analyze_data(data)  # Analiza danych
-            trends = calculate_trends(data)  # Obliczanie trendów
-            messagebox.showinfo("Analiza danych",
-                                f"Podsumowanie:\n{summary}\n\nKorelacja:\n{correlation}\n\nTrendy:\n{trends}")  # Wyświetlenie wyników analizy
-        else:
-            messagebox.showerror("Błąd", "Brak danych historycznych dla podanej miejscowości.")  # Wyświetlenie błędu
-
-    # Metoda do wyśrodkowania widżetów na stronie
-    def centrowanie(self):
-        for child in self.winfo_children():
-            child.grid_configure(padx=200)
 
 # Uruchomienie tworzenia bazy danych i głównej aplikacji
 if __name__ == "__main__":
