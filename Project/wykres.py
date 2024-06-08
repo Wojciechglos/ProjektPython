@@ -3,7 +3,7 @@ from datetime import datetime
 import numpy as np
 
 
-def plot_data(data):
+def wykres_data(data):
     # Konwersja dat z formatu tekstowego na obiekty datetime i umieszczenie ich w liście timestamps
     timestamps = [datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S') for row in data]
 

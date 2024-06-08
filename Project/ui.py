@@ -14,7 +14,7 @@ from analysis import analyze_data, calculate_trends  # Importowanie funkcji do a
 from database import create_database, save_data, fetch_historical_data  # Importowanie funkcji związanych z obsługą bazy danych
 # Importowanie funkcji z innych plików
 from API import api_stations, api_sensors, api_sensor_data  # Importowanie funkcji do pobierania danych
-from plot_data import plot_data  # Importowanie funkcji do tworzenia wykresów
+from wykres import wykres_data  # Importowanie funkcji do tworzenia wykresów
 
 
 # Klasa głównego okna aplikacji
@@ -318,7 +318,7 @@ class AnalizaDanych(ttk.Frame):
     def show_historical_data(self):
         data = fetch_historical_data(self.sensor_id)  # Pobranie danych historycznych
         if data:
-            plot_data(data)  # Wyświetlenie danych na wykresie
+            wykres_data(data)  # Wyświetlenie danych na wykresie
         else:
             messagebox.showerror("Błąd", "Brak danych historycznych dla podanej miejscowości.")  # Wyświetlenie błędu
 
