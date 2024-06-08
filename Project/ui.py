@@ -94,6 +94,10 @@ class Menu(ttk.Frame):
 
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
 
+    def centrowanie(self):
+        for child in self.winfo_children():
+            child.grid_configure(padx=200)
+
     # Metoda do obsługi zdarzenia kliknięcia przycisku Exit
     def wyjscie_z_aplikacji(self):
         self.controller.quit()  # Zamknięcie aplikacji
@@ -116,7 +120,7 @@ class MapaStacji(ttk.Frame):
         self.entry_radius = ttk.Entry(self)
         self.entry_radius.grid(row=1, column=1, padx=10, pady=10)
 
-        ttk.Button(self, text="Generuj mapę", command=self.generate_map).grid(row=2, column=0, columnspan=2, pady=10)
+        ttk.Button(self, text="Generuj mapę", command=self.generowanie_mapy).grid(row=2, column=0, columnspan=2, pady=10)
         ttk.Button(self, text="Wyjście do MENU", command=lambda: self.controller.wyświetlenie_ramki("Menu")).grid(row=3, column=0, columnspan=2, pady=10)
 
     def generowanie_mapy(self):
@@ -273,12 +277,16 @@ class AnalizaDanych(ttk.Frame):
 
         self.centrowanie()  # Wyśrodkowanie widżetów na stronie
 
+    # Metoda do wyśrodkowania widżetów na stronie
+    def centrowanie(self):
+        for child in self.winfo_children():
+            child.grid_configure(padx=200)
+
     # Metoda do ustawienia ID sensora
     def ustaw_id_sensora(self, sensor_id):
         self.sensor_id = sensor_id
 
     # Metoda do pobrania i zapisania danych sensora
-
     def pobranie_danych_sensora(self):
         if not self.sensor_id:
             return
