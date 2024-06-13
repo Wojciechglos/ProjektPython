@@ -151,7 +151,21 @@ class Menu(ttk.Frame):
 
 # Klasa reprezentująca stronę Mapy stacji
 class MapaStacji(ttk.Frame):
+
     def __init__(self, parent, controller):
+        """
+                Inicjalizacja ekranu Mapy stacji.
+
+                Metoda __init__ jest konstruktorem klasy MapaStacji, dziedziczącej po ttk.Frame,
+                czyli ramce interfejsu tkinterowego.
+
+                Parametry:
+                - parent: rodzic ramki, zazwyczaj główne okno aplikacji.
+                - controller: obiekt kontrolera aplikacji, który zarządza przełączaniem między stronami.
+
+                Inicjalizuje ekran Mapy stacji, zawierający pola do wprowadzenia adresu i promienia,
+                przycisk do generowania mapy oraz przycisk powrotu do MENU.
+                """
         super().__init__(parent)
         self.parent = parent
         self.controller = controller
@@ -159,6 +173,17 @@ class MapaStacji(ttk.Frame):
 
 # Generowanie okna Wygeneruj mape stacji
     def generowanie_pol_mapy(self):
+        """
+                Generuje pola formularza dla generowania mapy stacji.
+
+                Tworzy etykiety i pola do wprowadzenia adresu oraz promienia, przyciski do generowania mapy
+                i powrotu do MENU oraz przypisuje im odpowiednie funkcje.
+
+                Wykorzystuje:
+                - ttk.Label: Etykiety do opisania pól formularza.
+                - ttk.Entry: Pola do wprowadzania tekstu.
+                - ttk.Button: Przyciski do wywoływania funkcji.
+                """
         ttk.Label(self, text="Adres:").grid(row=0, column=0, padx=10, pady=10)
         self.entry_address = ttk.Entry(self)
         self.entry_address.grid(row=0, column=1, padx=10, pady=10)
@@ -171,6 +196,12 @@ class MapaStacji(ttk.Frame):
         ttk.Button(self, text="Wyjście do MENU", command=lambda: self.controller.wyświetlenie_ramki("Menu")).grid(row=3, column=0, columnspan=2, pady=10)
 
     def generowanie_mapy(self):
+        """
+                Generuje mapę stacji na podstawie wprowadzonych danych i otwiera ją w przeglądarce.
+
+                Pobiera adres i promień z pól formularza, generuje mapę przy użyciu funkcji map_generator.generate_map_and_return_html,
+                tworzy tymczasowy plik HTML, zapisuje w nim wygenerowany kod HTML i otwiera ten plik w przeglądarce.
+                """
         address = self.entry_address.get()
         radius_km = self.entry_radius.get()
         html_content = map_generator.generate_map_and_return_html(address, radius_km)
@@ -185,10 +216,22 @@ class MapaStacji(ttk.Frame):
 
     # Metoda do wyśrodkowania widżetów na stronie
     def centrowanie(self):
+        """
+        Metoda do wyśrodkowania wszystkich widżetów na stronie Mapy stacji.
+
+        Iteruje przez wszystkie dzieci ramki (self.winfo_children()) i konfiguruje
+        odstępy w poziomie (padx) dla każdego z nich, aby wyśrodkować je na stronie.
+        """
         for child in self.winfo_children():
             child.grid_configure(padx=200)
 
 def api_stations():
+    """
+    Funkcja pobierająca stacje pomiarowe z API GIOŚ (Główny Inspektorat Ochrony Środowiska).
+
+    Zwraca:
+    - dict lub list: Lista stacji pomiarowych w formacie JSON lub None, jeśli nie udało się pobrać danych.
+    """
     # Funkcja pobierająca stacje pomiarowe z API
     try:
         response = requests.get("https://api.gios.gov.pl/pjp-api/rest/station/findAll")
@@ -199,6 +242,19 @@ def api_stations():
         return None
 
 class StronaWyboruStacji(ttk.Frame):
+    """
+            Inicjalizacja strony wyboru stacji pomiarowych.
+
+            Metoda __init__ jest konstruktorem klasy StronaWyboruStacji, dziedziczącej po ttk.Frame,
+            czyli ramce interfejsu tkinterowego.
+
+            Parametry:
+            - parent: rodzic ramki, zazwyczaj główne okno aplikacji.
+            - controller: obiekt kontrolera aplikacji, który zarządza przełączaniem między stronami.
+
+            Inicjalizuje stronę zawierającą etykietę, pole do wprowadzenia nazwy miejscowości,
+            rozwijane menu do sortowania, listę stacji pomiarowych oraz przyciski do interakcji.
+            """
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
