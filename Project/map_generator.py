@@ -26,20 +26,29 @@ def generate_map_and_return_html(address, radius_km):
 
      """
     try:
+
+        # Używamy geocoder Nominatim do znalezienia współrzędnych (geokodowania) dla podanego adresu.
         geolocator = Nominatim(user_agent="my_application")
         location = geolocator.geocode(address)
+
+        # Jeśli nie udało się znaleźć lokalizacji, podnosimy błąd.
         if not location:
             raise AttributeError("Geocoding failed")
 
+        # Współrzędne centralnej lokalizacji (adresu).
         central_location = (location.latitude, location.longitude)
 
+        # URL API do pobrania danych o stacjach pomiarowych
         api_url = "https://api.gios.gov.pl/pjp-api/rest/station/findAll"
 
+        # Pobieramy dane o stacjach pomiarowych
         response = requests.get(api_url)
         stations = response.json()
 
+        # Tworzymy obiekt mapy folium centrowany na podanej lokalizacji, z zoomem 10.
         map = folium.Map(location=central_location, zoom_start=10)
 
+        # Iterujemy przez listę stacji pomiarowych
         for station in stations:
             station_name = station['stationName']
             lat = float(station['gegrLat'])
@@ -53,6 +62,7 @@ def generate_map_and_return_html(address, radius_km):
             station_location = (lat, lon)
             distance = geodesic(central_location, station_location).kilometers
 
+            # Dodajemy marker tylko dla stacji znajdujących się w określonym promieniu od centralnej lokalizacji.
             if distance <= float(radius_km):
                 popup_text = f"id Stacji:{id_stacji}<br>Miasto:{city_name}<br>Gmina:{commune_name}<br>Powiat:{district_name}<br>Woj:{province_name}<br>Odległość: {distance:.2f} km"
                 folium.Marker(
@@ -60,12 +70,14 @@ def generate_map_and_return_html(address, radius_km):
                     popup=popup_text
                 ).add_to(map)
 
+        # Dodajemy marker dla centralnej lokalizacji z czerwoną ikoną.
         folium.Marker(
             central_location,
             popup="Lokalizacja centralna",
             icon=folium.Icon(color="red")
         ).add_to(map)
 
+        # Dodajemy okrąg reprezentujący promień wokół centralnej lokalizacji.
         folium.Circle(
             central_location,
             radius=float(radius_km) * 1000,
@@ -75,12 +87,15 @@ def generate_map_and_return_html(address, radius_km):
             fill_opacity=0.1
         ).add_to(map)
 
+        # Generujemy kod HTML mapy
         html_content = map._repr_html_()
         return html_content
 
     except ValueError:
+        # Obsługa błędu przy nieprawidłowej wartości promienia
         messagebox.showerror("Błąd", "Wprowadź prawidłową liczbę dla promienia.")
         return None
     except AttributeError:
+        # Obsługa błędu przy niepowodzeniu geokodowania
         messagebox.showerror("Błąd", "Nie można znaleźć lokalizacji dla podanego adresu.")
         return None
