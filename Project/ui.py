@@ -37,7 +37,7 @@ Imports:
 - api_stations, api_sensors, api_sensor_data, api_index_powietrza from API: Funkcje do pobierania danych z API.
 - wykres_danych from wykres: Funkcja do tworzenia wykresów na podstawie danych.
 
-Classes:
+Klasy:
 - Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk): Główne okno aplikacji.
 - Menu(ttk.Frame): Strona startowa aplikacji.
 - MapaStacji(ttk.Frame): Strona mapy stacji.
@@ -45,7 +45,7 @@ Classes:
 - WyborSensora(ttk.Frame): Strona wyboru sensora.
 - AnalizaDanych(ttk.Frame): Strona analizy danych.
 
-Methods:
+Metody:
 - Aplikacja_do_sprawdzania_jakosci_powietrza.center_window(): Metoda do wyśrodkowania okna aplikacji na ekranie.
 - Aplikacja_do_sprawdzania_jakosci_powietrza.centrowanie(): Metoda do wyśrodkowania widżetów na stronie aplikacji.
 - Aplikacja_do_sprawdzania_jakosci_powietrza.wyświetlenie_ramki(page_name): Metoda do wyświetlenia danej strony aplikacji.
