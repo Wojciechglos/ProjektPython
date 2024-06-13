@@ -227,6 +227,13 @@ class StronaWyboruStacji(ttk.Frame):
 
     # Metoda do aktualizacji listy stacji pomiarowych
     def aktualizuj_stacje(self):
+        """
+                Aktualizuje listę stacji pomiarowych na podstawie wprowadzonych filtrów.
+
+                Pobiera stacje pomiarowe z API używając funkcji api_stations(),
+                sortuje je według wybranej opcji (Nazwa lub ID), filtrowanej przez wprowadzoną nazwę miejscowości.
+                Wyświetla listę stacji w oknie.
+                """
         try:
             stations = api_stations()  # Pobranie stacji pomiarowych
             if stations is None:
@@ -253,6 +260,13 @@ class StronaWyboruStacji(ttk.Frame):
 
     # Metoda do przejścia do kolejnej strony
     def idz_do_nastepnej_strony(self):
+        """
+               Przechodzi do kolejnej strony aplikacji po wybraniu stacji pomiarowej.
+
+               Pobiera zaznaczoną stację z listy, wydobywa jej ID i przekazuje je do następnej strony
+               do wyboru sensora na tej stacji, ustawiając odpowiednie ID stacji na następnej stronie
+               i wywołując funkcję wyświetlenia tej strony.
+               """
         selected_station = self.station_list.get(tk.ACTIVE)  # Pobranie zaznaczonej stacji
         if selected_station:
             station_id = selected_station.split('(')[-1].strip(')')  # Pobranie ID stacji
@@ -264,12 +278,30 @@ class StronaWyboruStacji(ttk.Frame):
 
     # Metoda do wyśrodkowania widżetów na stronie
     def centrowanie(self):
+        """
+        Metoda do wyśrodkowania wszystkich widżetów na stronie StronyWyboruStacji.
+
+        Iteruje przez wszystkie dzieci ramki (self.winfo_children()) i konfiguruje
+        odstępy w poziomie (padx) dla każdego z nich, aby wyśrodkować je na stronie.
+        """
         for child in self.winfo_children():
             child.grid_configure(padx=200)
 
 # Klasa reprezentująca stronę wyboru sensora
 class WyborSensora(ttk.Frame):
     def __init__(self, parent, controller):
+        """
+        Inicjalizacja strony wyboru sensora.
+
+        Metoda __init__ jest konstruktorem klasy WyborSensora, dziedziczącej po ttk.Frame,
+        czyli ramce interfejsu tkinterowego.
+
+        Parametry:
+        - parent: rodzic ramki, zazwyczaj główne okno aplikacji.
+        - controller: obiekt kontrolera aplikacji, który zarządza przełączaniem między stronami.
+
+        Inicjalizuje stronę zawierającą etykietę, rozwijane menu do sortowania, listę sensorów oraz przyciski do interakcji.
+        """
         super().__init__(parent)
         self.controller = controller
         self.station_id = None
@@ -294,11 +326,23 @@ class WyborSensora(ttk.Frame):
 
     # Metoda do ustawienia ID stacji
     def ustaw_id_stacji(self, station_id):
+        """
+        Ustawia ID wybranej stacji na stronie WyborSensora.
+
+        Parametry:
+        - station_id: ID wybranej stacji pomiarowej.
+        """
         self.station_id = station_id
 
     # Metoda do pobrania sensorów dla wybranej stacji
 
     def aktualizuj_sensory(self):
+        """
+        Aktualizuje listę sensorów na podstawie wybranej stacji.
+
+        Pobiera sensory dla wybranej stacji używając funkcji api_sensors(self.station_id),
+        sortuje je według wybranej opcji (Nazwa lub ID) i wyświetla listę sensorów w oknie.
+        """
         if not self.station_id:
             return
         try:
@@ -317,6 +361,13 @@ class WyborSensora(ttk.Frame):
 
     # Metoda do przejścia do kolejnej strony
     def idz_do_nastepnej_strony(self):
+        """
+             Przechodzi do kolejnej strony aplikacji po wybraniu sensora.
+
+             Pobiera zaznaczony sensor z listy, wydobywa jego ID i przekazuje je do strony
+             AnalizaDanych, ustawiając odpowiednie ID sensora na tej stronie i wywołując funkcję
+             wyświetlenia tej strony.
+             """
         selected_sensor = self.sensor_list.get(tk.ACTIVE)  # Pobranie zaznaczonego sensora
         if selected_sensor:
             sensor_id = selected_sensor.split('(')[-1].strip(')')  # Pobranie ID sensora
@@ -328,6 +379,12 @@ class WyborSensora(ttk.Frame):
 
     # Metoda do wyśrodkowania widżetów na stronie
     def centrowanie(self):
+        """
+        Metoda do wyśrodkowania wszystkich widżetów na stronie WyborSensora.
+
+        Iteruje przez wszystkie dzieci ramki (self.winfo_children()) i konfiguruje
+        odstępy w poziomie (padx) dla każdego z nich, aby wyśrodkować je na stronie.
+        """
         for child in self.winfo_children():
             child.grid_configure(padx=200)
 
