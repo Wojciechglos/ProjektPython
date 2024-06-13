@@ -15,7 +15,7 @@ from database import create_database, save_data, Dane  # Importowanie funkcji zw
 # save_data: Zapisuje dane do bazy danych
 # Dane: Prawdopodobnie funkcja do pobierania danych z bazy danych
 
-from API import api_stations, api_sensors, api_sensor_data, api_index_powietrza  # Importowanie funkcji do pobierania danych z API
+from API import api_stations, api_sensors, api_sensor_data  # Importowanie funkcji do pobierania danych z API
 # api_stations: Pobiera listę stacji z API
 # api_sensors: Pobiera listę sensorów dla danej stacji z API
 # api_sensor_data: Pobiera dane z sensora z API
@@ -67,6 +67,18 @@ Metody:
 # Klasa głównego okna aplikacji
 class Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk):
     def __init__(self):
+        """
+               Inicjalizacja głównego okna aplikacji.
+
+               Metoda __init__ jest konstruktorem klasy Aplikacja_do_sprawdzania_jakosci_powietrza,
+               dziedziczącej po tk.Tk, czyli głównym oknie aplikacji opartym na tkinterze.
+
+               Inicjalizuje główne właściwości okna, takie jak tytuł i rozmiar.
+               Tworzy ramki dla poszczególnych stron aplikacji i ustawia stronę startową.
+
+               Parametry:
+               - self: obiekt instancji klasy.
+               """
         super().__init__()
         self.title("Aplikacja do sprawdzania jakości powietrza")
         self.geometry("650x450")
@@ -110,12 +122,35 @@ class Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk):
 
     # Metoda do wyświetlania danej strony aplikacji
     def wyświetlenie_ramki(self, page_name):
+        """
+                Wyświetla określoną ramkę (stronę) aplikacji.
+
+                Metoda wyświetlenie_ramki przyjmuje nazwę strony jako argument i sprawdza,
+                czy taka strona istnieje w słowniku frames. Jeśli istnieje, wyświetla ją,
+                a jeśli nie, wyświetla stronę błędu.
+
+                Parametry:
+                - page_name: nazwa strony do wyświetlenia.
+                """
         frame = self.frames[page_name]
         frame.tkraise()  # Wyświetlenie ramki
 
 # Klasa reprezentująca stronę startową aplikacji
 class Menu(ttk.Frame):
     def __init__(self, parent, controller):
+        """
+                Inicjalizacja ekranu menu.
+
+                Metoda __init__ jest konstruktorem klasy Menu, dziedziczącej po ttk.Frame,
+                czyli ramce interfejsu tkinterowego.
+
+                Parametry:
+                - parent: rodzic ramki, zazwyczaj główne okno aplikacji.
+                - controller: obiekt kontrolera aplikacji, który zarządza przełączaniem między stronami.
+
+                Inicjalizuje etykietę powitalną i przyciski startu, które przekierowują użytkownika
+                do odpowiednich stron aplikacji po kliknięciu.
+                """
         super().__init__(parent)
         self.controller = controller
 
@@ -143,10 +178,21 @@ class Menu(ttk.Frame):
 
     def centrowanie(self):
         for child in self.winfo_children():
+            """
+                    Metoda do wyśrodkowania wszystkich widżetów na stronie menu.
+
+                    Iteruje przez wszystkie dzieci ramki (self.winfo_children()) i konfiguruje
+                    odstępy w poziomie (padx) dla każdego z nich, aby wyśrodkować je na stronie.
+                    """
             child.grid_configure(padx=200)
 
     # Metoda do obsługi zdarzenia kliknięcia przycisku Exit
     def wyjscie_z_aplikacji(self):
+        """
+               Metoda do obsługi zdarzenia kliknięcia przycisku Exit.
+
+               Po kliknięciu przycisku "Exit" zamknie aplikację wywołując metodę quit() na kontrolerze.
+               """
         self.controller.quit()  # Zamknięcie aplikacji
 
 # Klasa reprezentująca stronę Mapy stacji
