@@ -333,6 +333,19 @@ class WyborSensora(ttk.Frame):
 
 # Klasa reprezentująca stronę analizy danych
 class AnalizaDanych(ttk.Frame):
+    """
+    Inicjalizacja strony analizy danych.
+
+    Metoda __init__ jest konstruktorem klasy AnalizaDanych, dziedziczącej po ttk.Frame,
+    czyli ramce interfejsu tkinterowego.
+
+    Parametry:
+    - parent: rodzic ramki, zazwyczaj główne okno aplikacji.
+    - controller: obiekt kontrolera aplikacji, który zarządza przełączaniem między stronami.
+
+    Inicjalizuje stronę zawierającą etykietę "Analiza Danych", przyciski do pobierania i zapisywania danych,
+    oraz przycisk do wyjścia do MENU.
+    """
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -349,15 +362,35 @@ class AnalizaDanych(ttk.Frame):
 
     # Metoda do wyśrodkowania widżetów na stronie
     def centrowanie(self):
+        """
+        Metoda do wyśrodkowania wszystkich widżetów na stronie AnalizaDanych.
+
+        Iteruje przez wszystkie dzieci ramki (self.winfo_children()) i konfiguruje
+        odstępy w poziomie (padx) dla każdego z nich, aby wyśrodkować je na stronie.
+        """
         for child in self.winfo_children():
             child.grid_configure(padx=200)
 
     # Metoda do ustawienia ID sensora
     def ustaw_id_sensora(self, sensor_id):
+        """
+        Ustawia ID wybranego sensora na stronie AnalizaDanych.
+
+        Parametry:
+        - sensor_id: ID wybranego sensora.
+        """
         self.sensor_id = sensor_id
 
     # Metoda do pobrania i zapisania danych sensora
     def pobranie_danych_sensora(self):
+        """
+        Pobiera i zapisuje dane sensora do bazy danych.
+
+        Sprawdza, czy został wybrany sensor (self.sensor_id != None).
+        Wywołuje funkcję api_sensor_data(self.sensor_id) do pobrania danych sensora.
+        Zapisuje dane do bazy danych wywołując funkcję save_data().
+        Wyświetla informacje o sukcesie lub błędzie za pomocą messagebox.
+        """
         if not self.sensor_id:
             return
         try:
@@ -375,6 +408,13 @@ class AnalizaDanych(ttk.Frame):
 
     #  Metoda do rysowania wykresu
     def rysowanie_wykresu(self):
+        """
+        Metoda do rysowania wykresu danych dla wybranego sensora.
+
+        Pobiera dane z wybranego sensora używając klasy Dane(sensor_id).
+        Jeśli dane są dostępne, wywołuje funkcję wykres_danych(data) do wyświetlenia danych na wykresie.
+        W przeciwnym razie wyświetla błąd, że brak danych historycznych dla podanej miejscowości.
+        """
         data = Dane(self.sensor_id)  # Pobranie danych
         if data:
             wykres_danych(data)  # Wyświetlenie danych na wykresie
