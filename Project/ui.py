@@ -1,22 +1,75 @@
-# Importowanie modułów do interfejsu
-import tkinter as tk
-from tkinter import ttk, messagebox
-import requests as requests  # Moduł do wykonywania zapytań HTTP
-import map_generator
-import webbrowser
-import tempfile
-from database import create_database, save_data, Dane  # Importowanie funkcji związanych z obsługą bazy danych
-# Importowanie funkcji z innych plików
-from API import api_stations, api_sensors, api_sensor_data, api_index_powietrza  # Importowanie funkcji do pobierania danych
-from wykres import wykres_danych  # Importowanie funkcji do tworzenia wykresów
+# Importowanie modułów do interfejsu użytkownika Tkinter
+import tkinter as tk  # Tkinter jest biblioteką do tworzenia GUI w Pythonie
+from tkinter import ttk, messagebox  # ttk zawiera zaawansowane widżety Tkinter, a messagebox to moduł do wyświetlania okienek dialogowych
 
+import requests as requests  # Moduł requests służy do wykonywania zapytań HTTP
+
+import map_generator  # Prawdopodobnie moduł zawierający funkcje lub klasy do generowania map
+
+import webbrowser  # Webbrowser umożliwia otwieranie stron internetowych w domyślnej przeglądarce
+
+import tempfile  # Tempfile zapewnia interfejs do zarządzania tymczasowymi plikami i katalogami
+
+from database import create_database, save_data, Dane  # Importowanie funkcji związanych z obsługą bazy danych
+# create_database: Tworzy nową bazę danych lub łączy się z istniejącą
+# save_data: Zapisuje dane do bazy danych
+# Dane: Prawdopodobnie funkcja do pobierania danych z bazy danych
+
+from API import api_stations, api_sensors, api_sensor_data, api_index_powietrza  # Importowanie funkcji do pobierania danych z API
+# api_stations: Pobiera listę stacji z API
+# api_sensors: Pobiera listę sensorów dla danej stacji z API
+# api_sensor_data: Pobiera dane z sensora z API
+# api_index_powietrza: Pobiera indeks jakości powietrza dla danego sensora z API
+
+from wykres import wykres_danych  # Importowanie funkcji do tworzenia wykresów danych
+# wykres_danych: Funkcja do generowania wykresów na podstawie danych
+"""
+Importowanie niezbędnych modułów i definicja głównych klas aplikacji do sprawdzania jakości powietrza.
+
+Imports:
+- tkinter as tk: Biblioteka do tworzenia GUI w Pythonie.
+- ttk, messagebox from tkinter: ttk zawiera zaawansowane widżety Tkinter, a messagebox to moduł do wyświetlania okienek dialogowych.
+- requests as requests: Moduł do wykonywania zapytań HTTP.
+- map_generator: Prawdopodobnie moduł zawierający funkcje lub klasy do generowania map.
+- webbrowser: Umożliwia otwieranie stron internetowych w domyślnej przeglądarce.
+- tempfile: Zapewnia interfejs do zarządzania tymczasowymi plikami i katalogami.
+- create_database, save_data, Dane from database: Funkcje związane z obsługą bazy danych.
+- api_stations, api_sensors, api_sensor_data, api_index_powietrza from API: Funkcje do pobierania danych z API.
+- wykres_danych from wykres: Funkcja do tworzenia wykresów na podstawie danych.
+
+Classes:
+- Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk): Główne okno aplikacji.
+- Menu(ttk.Frame): Strona startowa aplikacji.
+- MapaStacji(ttk.Frame): Strona mapy stacji.
+- StronaWyboruStacji(ttk.Frame): Strona wyboru stacji pomiarowej.
+- WyborSensora(ttk.Frame): Strona wyboru sensora.
+- AnalizaDanych(ttk.Frame): Strona analizy danych.
+
+Methods:
+- Aplikacja_do_sprawdzania_jakosci_powietrza.center_window(): Metoda do wyśrodkowania okna aplikacji na ekranie.
+- Aplikacja_do_sprawdzania_jakosci_powietrza.centrowanie(): Metoda do wyśrodkowania widżetów na stronie aplikacji.
+- Aplikacja_do_sprawdzania_jakosci_powietrza.wyświetlenie_ramki(page_name): Metoda do wyświetlenia danej strony aplikacji.
+- Menu.centrowanie(): Metoda do wyśrodkowania widżetów na stronie Menu.
+- Menu.wyjscie_z_aplikacji(): Metoda do obsługi zdarzenia kliknięcia przycisku Exit.
+- MapaStacji.generowanie_pol_mapy(): Metoda do generowania pól i obsługi mapy stacji.
+- MapaStacji.generowanie_mapy(): Metoda do generowania mapy stacji na podstawie podanych danych.
+- StronaWyboruStacji.aktualizuj_stacje(): Metoda do aktualizacji listy stacji pomiarowych na podstawie wprowadzonych danych.
+- StronaWyboruStacji.idz_do_nastepnej_strony(): Metoda do przejścia do strony wyboru sensora po wybraniu stacji pomiarowej.
+- WyborSensora.ustaw_id_stacji(station_id): Metoda do ustawienia ID wybranej stacji na stronie wyboru sensora.
+- WyborSensora.aktualizuj_sensory(): Metoda do aktualizacji listy sensorów na podstawie wybranej stacji.
+- WyborSensora.idz_do_nastepnej_strony(): Metoda do przejścia do strony analizy danych po wybraniu sensora.
+- AnalizaDanych.ustaw_id_sensora(sensor_id): Metoda do ustawienia ID wybranego sensora na stronie analizy danych.
+- AnalizaDanych.pobranie_danych_sensora(): Metoda do pobrania i zapisania danych sensora do bazy danych.
+- AnalizaDanych.rysowanie_wykresu(): Metoda do wyświetlenia danych historycznych sensora na wykresie.
+
+"""
 
 # Klasa głównego okna aplikacji
 class Aplikacja_do_sprawdzania_jakosci_powietrza(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Aplikacja do sprawdzania jakości powietrza")
-        self.geometry("600x400")
+        self.geometry("650x450")
         self.frames = {}
 
         container = ttk.Frame(self)
@@ -320,9 +373,9 @@ class AnalizaDanych(ttk.Frame):
         except requests.RequestException as e:
             messagebox.showerror("Błąd", f"Nie udało się pobrać danych sensora: {e}")  # Wyświetlenie błędu
 
-    # # Metoda do wyświetlenia danych historycznych
+    #  Metoda do rysowania wykresu
     def rysowanie_wykresu(self):
-        data = Dane(self.sensor_id)  # Pobranie danych historycznych
+        data = Dane(self.sensor_id)  # Pobranie danych
         if data:
             wykres_danych(data)  # Wyświetlenie danych na wykresie
         else:

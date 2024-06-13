@@ -7,6 +7,24 @@ from geopy.distance import geodesic
 import tempfile
 
 def generate_map_and_return_html(address, radius_km):
+    """
+     Generuje mapę z lokalizacjami stacji pomiarowych w określonym promieniu od podanego adresu i zwraca ją jako kod HTML.
+
+     Argumenty:
+     - address : str
+         Adres centralny, od którego mierzymy odległości.
+     - radius_km : float
+         Promień w kilometrach, w którym wyszukujemy stacje pomiarowe.
+
+     Zwraca:
+     - str
+         Kod HTML zawierający mapę, jeśli wszystko przebiegnie pomyślnie.
+     - None
+         W przypadku wystąpienia błędu związanego z przetwarzaniem adresu lub promienia.
+
+     W przypadku błędnego formatu adresu lub promienia, wyświetla komunikat o błędzie w oknie dialogowym.
+
+     """
     try:
         geolocator = Nominatim(user_agent="my_application")
         location = geolocator.geocode(address)

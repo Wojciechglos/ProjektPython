@@ -3,6 +3,15 @@ from datetime import datetime
 import numpy as np
 
 def wykres_danych(data):
+    """
+    Funkcja generuje wykres z danych zawierających różne parametry oraz ich wartości w czasie.
+
+    Argumenty:
+    data : list
+        Lista zawierająca dane, gdzie każda lista wewnętrzna ma następującą strukturę:
+        [inna_dana1, inna_dana2, nazwa_parametru, wartosc, znacznik_czasu].
+
+    """
     # Konwersja dat z formatu tekstowego na obiekty datetime i umieszczenie ich w liście znaczników_czasu
     znaczniki_czasu = [datetime.strptime(wiersz[4], '%Y-%m-%d %H:%M:%S') for wiersz in data]
 
@@ -17,6 +26,17 @@ def wykres_danych(data):
 
     # Iteracja po każdym unikalnym parametrze
     for nazwa_parametru in nazwy_parametrow:
+        """
+               Dla każdego unikalnego parametru:
+               - Wybiera wartości i daty dla danego parametru.
+               - Filtruje wartości None.
+               - Upewnia się, że liczba wartości i znaczników czasu jest równa.
+               - Dodaje serię danych do wykresu.
+               - Dodaje kropki dla wartości minimalnej i maksymalnej na wykresie.
+               - Dodaje linię trendu.
+               - Oblicza i wyświetla średnią wartość oraz trend (wzrost lub spadek).
+               - Dodaje teksty z datą i godziną wartości minimalnej i maksymalnej.
+               """
         # Wybór wartości dla danego parametru
         wartosci_parametru = [wiersz[3] for wiersz in data if wiersz[2] == nazwa_parametru]
         wartosci_parametru = [wartosc for wartosc in wartosci_parametru if wartosc is not None]  # Filtruj wartości None
