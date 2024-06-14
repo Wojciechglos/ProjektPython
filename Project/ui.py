@@ -162,13 +162,9 @@ class Menu(ttk.Frame):
                                   command=lambda: controller.wyświetlenie_ramki("StronaWyboruStacji"))
         start_button1.grid(row=1, column=0, pady=10)
 
-        start_button2 = ttk.Button(self, text="Rozpocznij z danymi offline ",
-                                   command=lambda: controller.wyświetlenie_ramki("StronaWyboruStacji"))
-        start_button2.grid(row=2, column=0, pady=10)
-
-        start_button3 = ttk.Button(self, text="Wygeneruj mape stacji",
+        start_button2 = ttk.Button(self, text="Wygeneruj mape stacji",
                                   command=lambda: controller.wyświetlenie_ramki("MapaStacji"))
-        start_button3.grid(row=3, column=0, pady=10)
+        start_button2.grid(row=3, column=0, pady=10)
 
         exit_button = ttk.Button(self, text="Exit",
                                       command=self.wyjscie_z_aplikacji)
